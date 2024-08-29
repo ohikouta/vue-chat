@@ -5,6 +5,8 @@
   </div>
   <div>
     <h1>この下にユーザーの一覧を出したい</h1>
+    <!-- UserListコンポーネントを追加 -->
+    <UserList />
   </div>
 </template>
 
@@ -16,15 +18,18 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { db } from '../firebaseConfig';
 import MessageList from '../components/MessageList.vue';
 import MessageInput from '../components/MessageInput.vue';
+import UserList from '../components/UserList.vue';
 
 export default {
   components: {
     MessageList,
-    MessageInput
+    MessageInput,
+    UserList,
   },
   setup() {
     const messages = ref([]);
     const currentUser = ref(null);
+    const users = ref([]);
 
     const fetchMessages = () => {
       const q = collection(db, "messages");
@@ -33,6 +38,18 @@ export default {
         console.log("Loaded messages:", messages.value);
       });
     };
+
+    // ユーザー情報をフェッチする
+    const fetchUsers = () => {
+      const q = collection(db, "users");
+      onSnapshot(q, (querySnapshot) => {
+        users.value = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        console.log("Loaded users:", users.value);
+      });
+    }
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -60,7 +77,10 @@ export default {
       }
     };
 
-    onMounted(fetchMessages);
+    onMounted(() => {
+      fetchMessages();
+      fetchUsers();
+    });
 
     return {
       messages,
