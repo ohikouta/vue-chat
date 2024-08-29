@@ -5,23 +5,10 @@ import LoginComponent from '../components/LoginComponent.vue';
 import ProfileComponent from '../components/ProfileComponent.vue';
 
 const routes = [
-  {
-    path: '/',
-    name: 'ChatView',
-    component: ChatView
-  },
-  {
-    path: '/register',
-    component: RegisterComponent
-  },
-  {
-    path: '/login',
-    component: LoginComponent
-  },
-  {
-    path: '/profile',
-    component: ProfileComponent
-  },
+  { path: '/', name: 'ChatView', component: ChatView },
+  { path: '/register', component: RegisterComponent },
+  { path: '/login', component: LoginComponent },
+  { path: '/profile', component: ProfileComponent },
   // 他のルートがあればここに追加
 ];
 

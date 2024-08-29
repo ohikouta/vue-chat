@@ -3,6 +3,9 @@
     <MessageList :messages="messages" :currentUser="currentUser" />
     <MessageInput @sendMessage="sendMessage" />
   </div>
+  <div>
+    <h1>この下にユーザーの一覧を出したい</h1>
+  </div>
 </template>
 
 <script>

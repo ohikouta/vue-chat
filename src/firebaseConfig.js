@@ -21,7 +21,6 @@ const auth = getAuth(app);
 
 // Firestoreのインスタンスを取得
 const db = getFirestore(app);
-console.log(db);
 
 
 // Firestoreからデータを取得
