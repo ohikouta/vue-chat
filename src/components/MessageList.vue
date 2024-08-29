@@ -3,8 +3,10 @@
     <div v-for="(message, index) in messages" :key="index" class="message-item">
       {{ message.text }}
     </div>
+    <p>変わるか？</p>
     <p>ここから新規実装</p>
     <div v-for="message in messages" :key="message.timestamp">
+      <p>Logged in user ID: {{ currentUser.uid }}</p>
       <div v-if="message.userId === currentUser.uid" class="my-message">
         {{ message.userName }}: {{ message.text }}
       </div>

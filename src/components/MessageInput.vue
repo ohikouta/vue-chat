@@ -2,6 +2,7 @@
   <div class="message-input">
     <input v-model="message" @keyup.enter="handleSend" placeholder="Type a message..." />
     <button @click="handleSend">Send</button>
+    <button @click="increment">Count is: {{ count }}</button>
   </div>
 </template>
 
@@ -22,7 +23,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 .message-input {
   display: flex;
