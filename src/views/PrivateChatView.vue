@@ -34,7 +34,7 @@
         this.messages = querySnapshot.docs.map(doc => doc.data());
       });
   
-      const userDoc = await db.collection("users").doc(this.otherUserId).get();
+      const userDoc = await getDoc(doc(db, "users", this.otherUserId));
       if (userDoc.exists) {
         this.otherUserName = userDoc.data().username;
       }
@@ -53,4 +53,3 @@
     }
   };
   </script>
-  
