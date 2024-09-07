@@ -4,7 +4,7 @@
       <h2>User List</h2>
       <ul>
         <li v-for="user in users" :key="user.uid">
-          <router-link :to="{ name: 'Chat', params: { userId: user.uid } }">{{ user.username }}</router-link>
+          <router-link :to="{ name: 'PrivateChat', params: { userId: user.uid } }">{{ user.username }}</router-link>
         </li>
       </ul>
     </div>
