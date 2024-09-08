@@ -4,14 +4,16 @@
       <h2>User List</h2>
       <ul>
         <li v-for="user in users" :key="user.uid">
-          <router-link :to="{ name: 'PrivateChat', params: { userId: user.uid } }">{{ user.username }}</router-link>
+          <router-link :to="{ name: 'PrivateChat', params: { userId: user.uid } }">
+            {{ user.username }} - {{ user.email }}
+          </router-link>
         </li>
       </ul>
     </div>
   </template>
   
   <script>
-  import { getFirestore, collection, getDocs } from 'firebase/firestore';
+  import { collection, getDocs } from 'firebase/firestore';
   import { db } from '../firebaseConfig';
   
   export default {
