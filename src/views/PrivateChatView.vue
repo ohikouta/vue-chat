@@ -1,8 +1,10 @@
 <!-- PrivateChatView.vue -->
 <template>
-    <div>
+    <div class="chat-container">
       <h2>Chat with {{ chatPartnerName }}</h2>
-      <div v-for="message in messages" :key="message.id">
+      <!-- 送信者によって違うクラスを割り当てる -->
+      <div v-for="message in messages" :key="message.id"
+          :class="{'my-message': message.senderId === currentUser.uid, 'other-message': message.senderId !== currentUser.uid}">
         <p><strong>{{ message.senderName }}:</strong> {{ message.text }}</p>
       </div>
       <input v-model="newMessage" placeholder="Type your message" />
@@ -114,3 +116,57 @@
     }
   };
   </script>
+
+  <style scoped>
+  .chat-container {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  .my-message {
+    background-color: #d4f7dc;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    max-width: 60%;
+    align-self: flex-end;
+  }
+
+  .other-message {
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    max-width: 60%;
+    align-self: flex-start;
+  }
+
+  .chat-container div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  input {
+    width: calc(100% - 80px);
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    padding: 10px 20px;
+    margin-left: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+  </style>
