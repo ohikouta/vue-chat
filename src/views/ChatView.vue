@@ -98,5 +98,6 @@ export default {
   flex-direction: column;
   height: 100vh;
   justify-content: space-between;
+  background-color: #ffe4e1;
 }
 </style>
