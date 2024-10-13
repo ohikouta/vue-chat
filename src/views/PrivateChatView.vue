@@ -1,20 +1,36 @@
 <!-- PrivateChatView.vue -->
 <template>
+  <div class="chat-wrapper">
+    <button @click="goToHome" class="home-button">Home</button>
     <div class="chat-container">
       <h2>Chat with {{ chatPartnerName }}</h2>
-      <!-- 送信者によって違うクラスを割り当てる -->
-      <div v-for="message in messages" :key="message.id"
-          :class="{'my-message': message.senderId === currentUser.uid, 'other-message': message.senderId !== currentUser.uid}">
-        <p><strong>{{ message.senderName }}:</strong> {{ message.text }}</p>
+      <div class="messages" ref="messagesContainer">
+        <div 
+          v-for="message in messages" 
+          :key="message.id"
+          :class="{
+            'my-message': message.senderId === currentUser.uid,
+            'other-message': message.senderId !== currentUser.uid
+          }"
+        >
+          <p>
+            <strong>{{ message.senderName }}:</strong> {{ message.text }}
+          </p>
+          <small class="timestamp">{{ formatTimestamp(message.timestamp) }}</small>
+        </div>
       </div>
-      <input v-model="newMessage" placeholder="Type your message" />
-      <button @click="sendMessage">Send</button>
+      <div class="input-container">
+        <!-- 送信者によって違うクラスを割り当てる -->
+        <input v-model="newMessage" placeholder="Type your message" />
+        <button @click="sendMessage">Send</button>
+      </div>
     </div>
+  </div>
   </template>
   
   <script>
   import { db } from '../firebaseConfig';
-  import { collection, addDoc, onSnapshot, query, where } from 'firebase/firestore';
+  import { collection, addDoc, onSnapshot, query, where, orderBy } from 'firebase/firestore';
   import { getDoc, doc } from 'firebase/firestore';
   import { getAuth } from 'firebase/auth';
   import { serverTimestamp } from 'firebase/firestore';
@@ -31,8 +47,6 @@
       };
     },
     async created() {
-
-      // ここで chatPartnerId を初期化
       this.chatPartnerId = this.$route.params.userId;
       console.log('取れているかを確認する---->>>:', this.chatPartnerId);
 
@@ -42,11 +56,16 @@
       // Firestoreから特定のチャットメッセージをリアルタイムで取得
       const messagesQuery = query(
         collection(db, "messages"),
-        where("chatId", "==", chatId)
+        where("chatId", "==", chatId),
+        orderBy('timestamp', 'asc')
       );
 
       onSnapshot(messagesQuery, (snapshot) => {
-        this.messages = snapshot.docs.map(doc => doc.data());
+        this.messages = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          timestamp: doc.data().timestamp?.toDate() || new Date()
+        }));
+        this.scrollToBottom();
       });
 
       // チャット相手の情報を取得
@@ -57,6 +76,10 @@
       // chatIdを生成する関数
       generateChatId(userId1, userId2) {
         return [userId1, userId2].sort().join('_');
+      },
+
+      goToHome() {
+        this.$router.push('/');
       },
 
       // チャット相手の名前をFirestoreから取得
@@ -108,20 +131,52 @@
 
         try {
           await addDoc(collection(db, "messages"), messageData);
-          this.newMessage = "";  // メッセージフィールドをリセット
+          this.newMessage = "";
+          this.scrollToBottom();
         } catch (error) {
           console.error('メッセージ送信エラー:', error);
         }
-      }
-    }
+      },
+      formatTimestamp(timestamp) {
+        const date = new Date(timestamp);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+      },
+      scrollToBottom() {
+        this.$nextTick(() => {
+          const container = this.$refs.messagesContainer;
+          container.scrollTop = container.scrollHeight;
+        });
+      },
+    },
   };
   </script>
 
   <style scoped>
+  .chat-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+  }
+
   .chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     background-color: #f5f5f5;
     padding: 20px;
+    width: 80%;
+    max-width: 1200px;
     border-radius: 8px;
+    height: 80%;
+    box-shadow: 0, 4px, 8px, rgba(0, 0, 0, 0.1);
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
   }
 
   .my-message {
@@ -148,6 +203,11 @@
     align-items: flex-start;
   }
 
+  .input-container {
+    display: flex;
+    align-items: center;
+  }
+
   input {
     width: calc(100% - 80px);
     padding: 10px;
@@ -156,6 +216,21 @@
     border: 1px solid #ccc;
   }
 
+  .home-button {
+    align-self: flex-start;
+    margin: 10px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .home-button:hover {
+    background-color: #0056b3;
+  }
+  
   button {
     padding: 10px 20px;
     margin-left: 10px;
@@ -168,5 +243,12 @@
 
   button:hover {
     background-color: #0056b3;
+  }
+
+  .timestamp {
+    font-size: 0.8rem;
+    color: #666;
+    text-align: right;
+    margin-top: 5px;
   }
   </style>
