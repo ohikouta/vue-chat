@@ -44,7 +44,7 @@ export default {
           this.$router.push({ path: '/login' }); // ルートページに遷移
         })
         .catch((error) => {
-          console.error("Logout failed:", error); //　エラーハンドリング
+          console.error("Logout failed:", error); // エラーハンドリング
         });
     }
   }
