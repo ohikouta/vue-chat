@@ -1,8 +1,4 @@
 <template>
-  <div class="chat-view">
-    <MessageList :messages="messages" :currentUser="currentUser" />
-    <MessageInput @sendMessage="sendMessage" />
-  </div>
   <div>
     <h1>この下にユーザーの一覧を出したい</h1>
     <!-- UserListコンポーネントを追加 -->
@@ -96,8 +92,6 @@ export default {
 .chat-view {
   display: flex;
   flex-direction: column;
-  height: 100vh;
   justify-content: space-between;
-  background-color: #ffe4e1;
 }
 </style>
