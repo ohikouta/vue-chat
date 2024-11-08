@@ -1,9 +1,11 @@
 <template>
   <div id="app">
     <header>
-      <h1>ようこそ、Vue-chatへ</h1>
-      <p>このチャットアプリは、NoSQL(Firebase)を使用しています</p>
+      <h1>ナポリタン</h1>
       <div v-if="user">
+        <div class="profile-icon" @click="openProfileModal">
+          <img :src="profileImageUrl" alt="Profile Icon" />
+        </div>
         <p>Logged in as: {{ user.displayName || user.email }}</p>
         <button @click="logout">Logout</button>
       </div>
@@ -11,6 +13,8 @@
         <button @click="goToLogin">Login</button>
       </div>
     </header>
+
+    <ProfileModal v-if="isProfileModalOpen" @close="isProfileModalOpen = false" />
     
     <!-- ImageUploaderコンポーネントを追加 -->
     <section v-if="user">
@@ -24,16 +28,21 @@
 
 <script>
 import { getAuth, signOut } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import ImageUploader from "@/components/ImageUploader.vue"; // ImageUploaderコンポーネントをインポート
+import ProfileModal from "@/components/ProfileModal.vue";
 
 export default {
   name: 'App',
   components: {
+    ProfileModal,
     ImageUploader, // コンポーネントを登録
   },
   data() {
     return {
       user: null, // ユーザーの状態を保持
+      profileImageUrl: null,
+      isProfileModalOpen: false,
     };
   },
   created() {
@@ -41,9 +50,24 @@ export default {
     this.user = auth.currentUser; // 初期ロード時のユーザー情報
     auth.onAuthStateChanged((user) => {
       this.user = user;
+      if (user) {
+        this.loadProfileImage();
+      }
     });
   },
   methods: {
+    async loadProfileImage() {
+      // FirestoreからURLを取得してプロフィール画像URLをセット
+      const db = getFirestore();
+      const userDocRef = doc(db, "users", this.user.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists) {
+        this.profileImageUrl = userDoc.data().profileImageUrl;
+      }
+    },
+    openProfileModal() {
+      this.isProfileModalOpen = true;
+    },
     goToLogin() {
       this.$router.push({ path: '/login' }); // ログインページに遷移
     },
@@ -70,5 +94,23 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+/* アイコンのレイアウト */
+.profile-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+}
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 </style>
