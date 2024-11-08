@@ -1,6 +1,6 @@
 <template>
     <div class="modal-overlay" @click.self="close">
-        <div class="model-content">
+        <div class="modal-content">
             <h2>プロフィール編集</h2>
             <ImageUploader @imageUploaded="handleImageUploaded" />
             <button @click="close">Close</button>
