@@ -11,15 +11,26 @@
         <button @click="goToLogin">Login</button>
       </div>
     </header>
+    
+    <!-- ImageUploaderコンポーネントを追加 -->
+    <section v-if="user">
+      <h2>プロフィール画像をアップロード</h2>
+      <ImageUploader />
+    </section>
+
     <router-view></router-view>
   </div>
 </template>
 
 <script>
 import { getAuth, signOut } from "firebase/auth";
+import ImageUploader from "@/components/ImageUploader.vue"; // ImageUploaderコンポーネントをインポート
 
 export default {
   name: 'App',
+  components: {
+    ImageUploader, // コンポーネントを登録
+  },
   data() {
     return {
       user: null, // ユーザーの状態を保持
@@ -48,7 +59,6 @@ export default {
         });
     }
   }
-
 }
 </script>
 
