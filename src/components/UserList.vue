@@ -1,4 +1,4 @@
-　<template>
+<template>
   <div class="user-list">
     <h2>User List</h2>
     <div class="user-card" v-for="user in users" :key="user.uid">
