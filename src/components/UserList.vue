@@ -15,14 +15,14 @@
 
 <script>
 import { db } from "@/firebaseConfig";
-import { collection, getDocs, getDoc, doc } from "firebase/firestore";
-import { getDatabase, ref, onValue } from "firebase/database"; // Realtime Database 用
+import { collection, getDocs, getDoc, doc, onSnapshot } from "firebase/firestore";
 import defaultProfileImage from "@/assets/default-profile.png"; // デフォルトのプロファイル画像
 
 export default {
   data() {
     return {
-      users: []
+      users: [],
+      defaultProfileImage,
     };
   },
   async created() {
@@ -37,11 +37,10 @@ export default {
         userData.latestMessage = latestMessageDoc.data();
       }
 
-      // オンラインステータスの取得
-      const rtdb = getDatabase(); // Realtime Database インスタンスを取得
-      const onlineStatusRef = ref(rtdb, `status/${docSnapshot.id}`);
-      onValue(onlineStatusRef, (snapshot) => {
-        userData.isOnline = snapshot.val()?.isOnline || false;
+      // オンラインステータスの取得：firestoreでオンラインステータスを監視
+      const userDocRef = doc(db, "users", docSnapshot.id); // Realtime Database インスタンスを取得
+      onSnapshot(userDocRef, (snapshot) => {
+        userData.isOnline = snapshot.data()?.isOnline || false;
       });
 
       return userData;
