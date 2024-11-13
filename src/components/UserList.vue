@@ -7,7 +7,10 @@
         <h3>{{ user.username || "匿名ユーザー" }}</h3>
         <p>{{ user.email }}</p>
         <p v-if="user.latestMessage">Last message: {{ user.latestMessage.content }} - {{ user.latestMessage.timestamp }}</p>
-        <p v-if="user.isOnline" class="online-status">Online</p>
+        <!-- オンライン・オフラインのステータス表示 -->
+        <p class="status" :class="{ online: user.isOnline, offline: !user.isOnline }">
+          {{ user.isOnline ? "Online" : "Offline" }}
+        </p>
       </router-link>
     </div>
   </div>
@@ -83,8 +86,14 @@ export default {
   margin-right: 10px;
 }
 
-.online-status {
-  color: green;
+/* オンライン・オフラインのスタイル */
+.status {
   font-weight: bold;
+}
+.online {
+  color: green;
+}
+.offline {
+  color: red;
 }
 </style>
