@@ -10,7 +10,8 @@
 
 <script>
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
+import { doc, updateDoc } from "firebase/firestore";
 
 export default {
 	data() {
@@ -22,8 +23,16 @@ export default {
 	methods: {
 		async login() {
 			try {
+				// ユーザーのログイン
 				const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password);
+				const user =  userCredential.user;
 				console.log("User logged in:", userCredential.user);
+
+				// FirestoreでユーザーのisOnlineをtrueに更新
+				const userDocRef = doc(db, "users", user.uid);
+				await updateDoc(userDocRef, {
+					isOnline: true
+				});
 				
 				// ログイン成功後の処理(例：リダイレクト)
 				this.$router.push({ name: "Chat" });

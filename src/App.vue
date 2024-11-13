@@ -28,7 +28,7 @@
 
 <script>
 import { getAuth, signOut } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import ImageUploader from "@/components/ImageUploader.vue"; // ImageUploaderコンポーネントをインポート
 import ProfileModal from "@/components/ProfileModal.vue";
 
@@ -73,7 +73,15 @@ export default {
     },
     logout() {
       const auth = getAuth();
-      signOut(auth)
+      const db =  getFirestore();
+      // Firestoreのユーザードキュメント参照を取得
+      const userDocRef = doc(db, "users", this.user.uid);
+
+      // FirestoreでisOnlineをfalseに設定してからサインアウト
+      updateDoc(userDocRef, { isOnline: false })
+        .then(() => {
+          return signOut(auth);
+        })
         .then(() => {
           this.user = null; // ログアウト後にユーザーをnullに
           this.$router.push({ path: '/login' }); // ルートページに遷移
