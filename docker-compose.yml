@@ -2,9 +2,11 @@ version: '3'
 
 services:
   vue-app:
+    container_name: vue-container
     build:
       context: .
       dockerfile: Dockerfile
+    image: vue-chat-app
     ports:
       - "8080:8080"
     volumes:
