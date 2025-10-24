@@ -1,6 +1,16 @@
-node_modules/
-dist/
+# mac
 .DS_Store
+
+# node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# build
+dist/
+.cache/
+**/.cache/
 
 google-cloud-sdk/
 google-cloud-sdk-419.0.0-linux-x86_64.tar.gz
