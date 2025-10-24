@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { getAuth } from 'firebase/auth';
+
 import ChatView from '../views/ChatView.vue';
 import PrivateChatView from '../views/PrivateChatView.vue';
 import UserList from '../components/UserList.vue';
@@ -21,8 +23,16 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
-  const { auth } = require('../firebaseConfig');
+router.beforeEach(async (to, from, next) => {
+  const auth = getAuth();
+
+  await new Promise((resolve) => {
+    const unsubscribe = auth.onAuthStateChanged(() => {
+      unsubscribe();
+      resolve();
+    });
+  });
+
   const user = auth.currentUser;
 
   const requireAuth = ['/', '/users', '/profile'].includes(to.path) || 
