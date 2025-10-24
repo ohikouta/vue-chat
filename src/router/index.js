@@ -21,4 +21,20 @@ const router = createRouter({
   routes
 });
 
+router.beforeEach((to, from, next) => {
+  const { auth } = require('../firebaseConfig');
+  const user = auth.currentUser;
+
+  const requireAuth = ['/', '/users', '/profile'].includes(to.path) || 
+                      to.path.startsWith('/chat/');
+  
+  if (requireAuth && !user) {
+    next('/login');
+  } else if ((to.path === '/login' || to.path === '/register') && user) {
+    next('/');
+  } else {
+    next();
+  }
+});
+
 export default router;
