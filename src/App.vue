@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <header>
-      <h1>ナポリタン</h1>
+      <h1>こんにちは</h1>
       <div v-if="user">
         <div class="profile-icon" @click="openProfileModal">
           <img :src="profileImageUrl" alt="Profile Icon" />
