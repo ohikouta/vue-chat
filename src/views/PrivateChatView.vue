@@ -1,4 +1,3 @@
-<!-- PrivateChatView.vue -->
 <template>
   <div class="chat-wrapper">
     <button @click="goToHome" class="home-button">Home</button>
