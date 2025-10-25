@@ -42,7 +42,7 @@
         newMessage: '',
         currentUser: getAuth().currentUser,
         chatPartnerId: '',
-        chatPartnerName: '', // 相手の名前を動的に取得
+        chatPartnerName: '',
       };
     },
     async created() {
