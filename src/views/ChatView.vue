@@ -12,15 +12,11 @@ import { collection, addDoc, onSnapshot } from 'firebase/firestore';
 import { auth } from '../firebaseConfig';  // ここで firebaseConfig.js から auth をインポート
 import { onAuthStateChanged } from 'firebase/auth'; 
 import { db } from '../firebaseConfig';
-import MessageList from '../components/MessageList.vue';
-import MessageInput from '../components/MessageInput.vue';
 import UserList from '../components/UserList.vue';
 
 export default {
   components: {
-    MessageList,
-    MessageInput,
-    UserList,
+    UserList
   },
   setup() {
     const messages = ref([]);
