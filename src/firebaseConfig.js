@@ -7,13 +7,13 @@ import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDUG6aoRr4a75rSv9kIM-JpNgISrbgsXk0",
-  authDomain: "vue-chat-c4179.firebaseapp.com",
-  projectId: "vue-chat-c4179",
-  storageBucket: "gs://vue-chat-c4179.firebasestorage.app",
-  messagingSenderId: "322636212530",
-  appId: "1:322636212530:web:3650aa55051f8466e28f2b",
-  measurementId: "G-MTWEB1Y4ZW"
+  apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+  authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VUE_APP_FIREBASE_APP_ID,
+  measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID
 };
 
 // Firebaseアプリを初期化

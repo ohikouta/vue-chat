@@ -3,3 +3,5 @@ dist/
 
 google-cloud-sdk/
 google-cloud-sdk-419.0.0-linux-x86_64.tar.gz
+
+.env.local
