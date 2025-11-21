@@ -13,11 +13,16 @@
         <li>カスタマイズ性の高いプロフィール機能</li>
       </ul>
 
+      <div class="hero__actions">
+        <button class="btn primary" @click="$emit('login')">ログインして始める</button>
+        <button class="btn ghost" @click="$emit('register')">初めての方はこちら</button>
+      </div>
+    </div>
+      
       <div class="hero__visual">
         <img src="@/assets/sample_chat.png" alt="チャットのイメージ" />
         <p>コンタクトリストやダイレクトチャットの画面イメージ</p>
       </div>
-    </div>
   </section>
 </template>
 
