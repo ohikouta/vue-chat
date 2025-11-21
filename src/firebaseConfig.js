@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, getDocs, collection } from 'firebase/firestore'; // 追加
+import { getFirestore } from 'firebase/firestore';
 import { getAnalytics, logEvent } from 'firebase/analytics'; // 追加
 import { getAuth } from 'firebase/auth';
 import { getStorage } from "firebase/storage";
@@ -23,12 +23,6 @@ const auth = getAuth(app);
 // Firestoreのインスタンスを取得
 const db = getFirestore(app);
 const storage = getStorage(app);
-
-// Firestoreからデータを取得
-const querySnapshot = await getDocs(collection(db, "vue-chat"));
-querySnapshot.forEach((doc) => {
-  console.log(`${doc.id} => ${doc.data()}`);
-});
 
 // Optional: Analyticsの初期化
 const analytics = getAnalytics(app);
