@@ -3,5 +3,14 @@
   "[vue]": {
     "editor.tabSize": 2,
     "editor.insertSpaces": true
-  }
+  },
+
+    "cSpell.words": [
+        "Avenir",
+        "firebaseapp",
+        "firebasestorage",
+        "firestore",
+        "MTWEB",
+        "Srbgs"
+    ]
 }

@@ -20,4 +20,28 @@ const router = createRouter({
   routes
 });
 
+router.beforeEach(async (to, from, next) => {
+  const auth = getAuth();
+
+  await new Promise((resolve) => {
+    const unsubscribe = auth.onAuthStateChanged(() => {
+      unsubscribe();
+      resolve();
+    });
+  });
+
+  const user = auth.currentUser;
+
+  const requireAuth = ['/', '/users', '/profile'].includes(to.path) || 
+                      to.path.startsWith('/chat/');
+  
+  if (requireAuth && !user) {
+    next('/login');
+  } else if ((to.path === '/login' || to.path === '/register') && user) {
+    next('/');
+  } else {
+    next();
+  }
+});
+
 export default router;
