@@ -1,24 +1,33 @@
 <template>
-  <div>
-    <h1>この下にユーザーの一覧を出したい</h1>
-    <!-- UserListコンポーネントを追加 -->
-    <UserList />
+  <div class="chat-view">
+    <div v-if="currentUser">
+      <UserList />
+    </div>
+    <div v-else>
+      <LandingHero @login="goToLogin" @register="goToRegister"/>
+    </div>  
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { collection, addDoc, onSnapshot } from 'firebase/firestore';
 import { auth } from '../firebaseConfig';  // ここで firebaseConfig.js から auth をインポート
 import { onAuthStateChanged } from 'firebase/auth'; 
 import { db } from '../firebaseConfig';
 import UserList from '../components/UserList.vue';
+import LandingHero from '../components/LandingHero.vue';
 
 export default {
   components: {
-    UserList
+    UserList,
+    LandingHero
   },
   setup() {
+    const router = useRouter();
+    const goToLogin = () => router.push('/login');
+    const goToRegister = () => router.push('/register');
     const messages = ref([]);
     const currentUser = ref(null);
     const users = ref([]);
@@ -31,7 +40,6 @@ export default {
       });
     };
 
-    // ユーザー情報をフェッチする
     const fetchUsers = () => {
       const q = collection(db, "users");
       onSnapshot(q, (querySnapshot) => {
@@ -75,6 +83,8 @@ export default {
     });
 
     return {
+      goToLogin,
+      goToRegister,
       messages,
       currentUser,
       sendMessage
