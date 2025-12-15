@@ -11,11 +11,10 @@
 <script>
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebaseConfig";
-import ChatView from '../views/ChatView.vue';
 
 export default {
   components: {
-    ChatView
+    // ChatView
   },
   data() {
     return {
