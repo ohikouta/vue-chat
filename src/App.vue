@@ -1,13 +1,19 @@
 <template>
   <div id="app">
+    <Header />
     <router-view />
   </div>
 </template>
 
 <script>
+import Header from './components/Header.vue';
+
 export default {
-  name: 'App'
-}
+  name: 'App',
+  components: {
+    Header
+  }
+};
 </script>
 
 <style>
@@ -17,6 +23,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   min-height: 100vh;
+  background: #f7f8fb;
 }
 </style>
-
