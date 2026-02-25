@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { getAuth } from 'firebase/auth';
 import HomeView from '../views/HomeView.vue';
 import PrivateChatView from '../views/PrivateChatView.vue';
 import UserList from '../components/UserList.vue';
@@ -32,7 +33,7 @@ router.beforeEach(async (to, from, next) => {
 
   const user = auth.currentUser;
 
-  const requireAuth = ['/', '/users', '/profile'].includes(to.path) || 
+  const requireAuth = ['/users', '/profile'].includes(to.path) || 
                       to.path.startsWith('/chat/');
   
   if (requireAuth && !user) {
