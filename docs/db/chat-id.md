@@ -36,6 +36,10 @@ dm:v1:<lenA>:<uidA>|<lenB>:<uidB>
 5. それぞれの UID の文字数を取得する
 6. `dm:v1:<lenA>:<uidA>|<lenB>:<uidB>` の形式で結合する
 
+### ソート順
+
+UID の並び順は、元の UID 文字列を JavaScript の文字列比較と同じ規則で昇順に比較した結果に従う。実装上は、共有ユーティリティ内で `String(uidA) < String(uidB)` と同等の比較結果になるようにそろえる。
+
 ## 採用理由
 
 - **順序非依存**  
@@ -63,6 +67,7 @@ dm:v1:<lenA>:<uidA>|<lenB>:<uidB>
 - 参加者 UID は必ず昇順ソートする
 - `chatId` は必ず 2 名分の UID から導出する
 - `senderId` / `receiverId` を正本参照として保持し、`chatId` は派生値として扱う
+- 書き込み時は共有ユーティリティの `generateChatId(senderId, receiverId)` を必ず通して `chatId` を生成する
 - 同一 UID の組み合わせを許さない場合は生成時に弾く
 - UID の境界は区切り文字ではなく長さ情報で判定する
 
@@ -99,7 +104,7 @@ function generateChatId(userId1, userId2) {
 ### `#29` Rules 方針
 
 - Rules では `senderId` / `receiverId` を正本の参加者情報として扱う
-- `chatId` の妥当性を Rules で完全再計算するかどうかは別途判断が必要
+- `chatId` の妥当性を Rules で完全再計算するかどうかは `#29` で判断する
 - 最低限、当事者以外が他人の組み合わせで DM を読めない前提を維持する
 
 ## 完了条件に対する自己判定
