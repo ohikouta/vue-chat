@@ -96,7 +96,7 @@
 | `senderId` | `senderId` | そのまま移す |
 | `senderName` | `senderName` | そのまま移す |
 | `receiverId` | `receiverId` | そのまま移す |
-| `chatId` | `chatId` | そのまま移す。生成規則は `sort().join('_')` を採用済み |
+| `chatId` | `chatId` | 旧値を新フォーマットへ変換して移す。生成規則は `#27` の長さプレフィックス方式を採用 |
 | `timestamp` | `createdAt` | フィールド名を変換して保持する |
 | `participants` | なし | 現時点では移行先の必須フィールドにしない |
 
@@ -164,7 +164,7 @@
 
 ## 未確定事項
 
-- `chatId` は `sort().join('_')` を使う
+- `chatId` は `#27` で確定した長さプレフィックス方式へ変換する
 - `directMessages` を使う画面クエリと必要インデックスは `#28` で確定する
 - `directMessages` の権限制御詳細は `#29` で確定する
 - バックフィル実行方法（スクリプト / エミュレータ / 本番手順）は実装時に別途決める
