@@ -110,7 +110,7 @@ users ||--o{ threadComments : posts
 
 #### 補足
 
-- `chatId` は必須フィールドとして持つが、具体的な生成規則は `#27` で確定する
+- `chatId` の生成規則は `#27` で確定した。詳細は下記「`chatId` 生成規則」セクションを参照
 - `participants` は現時点では必須にしない。参加者一覧クエリが必要になった段階で後続 Issue で追加を検討する
 - `senderName` は表示用キャッシュとして保持する。`senderId` を正本参照とし、表示名変更による過去データとの差分は許容する
 
@@ -147,10 +147,34 @@ users ||--o{ threadComments : posts
 - `createdAt` と現行 `timestamp` の扱いを揃える必要がある
 - `users/{userId}/messages/latest` を残すか再設計するかを決める必要がある
 
-### `#27` DM 識別用 `chatId`
+### `#27` DM 識別用 `chatId`（確定済み）
 
-- `directMessages.chatId` の生成規則を確定する
-- `chatId` の衝突回避方針を決める
+#### 生成規則
+
+2 つの Firebase Auth UID を辞書順（昇順）にソートしてアンダースコア `_` で連結する。
+
+```js
+// src/utils/chatId.js
+export function generateChatId(userId1, userId2) {
+  return [userId1, userId2].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)).join('_');
+}
+```
+
+例: UID が `"abc"` と `"xyz"` の場合 → `"abc_xyz"`
+
+呼び出し側は引数の順序を意識する必要はなく、`generateChatId(a, b) === generateChatId(b, a)` が常に成り立つ。
+
+#### 衝突回避方針
+
+Firebase Auth UID は 28 文字の URL セーフ Base64 文字列（英数字と `-`）で構成され、アンダースコア（`_`）を含まない。
+したがって区切り文字に `_` を使うことで、異なるユーザーペアが同一の `chatId` を生成する（偽陽性衝突）は発生しない。
+
+| 観点 | 内容 |
+|---|---|
+| UID の文字集合 | 英数字と `-`（アンダースコアなし）|
+| 区切り文字 | `_`（UID に含まれないため安全） |
+| 引数順の正規化 | `sort()` により常に同一結果 |
+| 実装箇所 | `src/utils/chatId.js`（共有ユーティリティ） |
 
 ### `#28` クエリ / インデックス
 
@@ -166,7 +190,6 @@ users ||--o{ threadComments : posts
 
 ## この文書でまだ確定していないこと
 
-- `chatId` の具体的な生成規則
 - 必要な複合インデックスの一覧
 - Security Rules の実装詳細
 - `messages` から `directMessages` への移行方法

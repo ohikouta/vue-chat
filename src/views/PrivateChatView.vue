@@ -33,6 +33,7 @@
   import { getDoc, doc } from 'firebase/firestore';
   import { getAuth } from 'firebase/auth';
   import { serverTimestamp } from 'firebase/firestore';
+  import { generateChatId } from '../utils/chatId';
 
   
   export default {
@@ -50,7 +51,7 @@
       console.log('取れているかを確認する---->>>:', this.chatPartnerId);
 
       console.log('Chat partner ID:', this.chatPartnerId);
-      const chatId = this.generateChatId(this.currentUser.uid, this.chatPartnerId);
+      const chatId = generateChatId(this.currentUser.uid, this.chatPartnerId);
 
       // Firestoreから特定のチャットメッセージをリアルタイムで取得
       const messagesQuery = query(
@@ -72,11 +73,6 @@
 
     },
     methods: {
-      // chatIdを生成する関数
-      generateChatId(userId1, userId2) {
-        return [userId1, userId2].sort().join('_');
-      },
-
       goToHome() {
         this.$router.push('/');
       },
@@ -103,7 +99,7 @@
 
       // メッセージ送信
       async sendMessage() {
-        const chatId = this.generateChatId(this.currentUser.uid, this.chatPartnerId);
+        const chatId = generateChatId(this.currentUser.uid, this.chatPartnerId);
 
         if (!this.newMessage.trim()) {
           alert('メッセージを入力してください');
