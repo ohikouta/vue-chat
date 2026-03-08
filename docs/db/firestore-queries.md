@@ -7,7 +7,7 @@
 
 - 画面構成は [routes.md](/Users/koutaohi/projects/vue-chat/docs/routes.md) を基準にする
 - データ構造は [firestore.md](/Users/koutaohi/projects/vue-chat/docs/db/firestore.md) を基準にする
-- `chatId` は `sort().join('_')` で生成する
+- `chatId` は `#27` で確定した長さプレフィックス方式で生成する
 - 既存 `messages` と `users/{userId}/messages/latest` の扱いは `#26` で確定する
 
 ## まとめ
@@ -175,7 +175,7 @@
 
 ## `#27` 反映事項
 
-- `chatId` は `sort().join('_')` を前提にする
+- `chatId` は長さプレフィックス方式を前提にする
 - `directMessages` は `chatId` を単一文字列フィールドとして扱う
 - `PrivateChat` は `directMessages.createdAt` を正式タイムスタンプとして使う前提で整理する
 
