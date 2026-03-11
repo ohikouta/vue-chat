@@ -122,15 +122,18 @@
   - `senderId` / `senderName` が無ければ `userId` / `userName` から補完する
   - `senderId` と `userId` のどちらも無いレコードは異常データとして扱い、スキップまたは手動補正対象にする
 - バックフィル対象を列挙する
+  - `chatId` と `receiverId` が揃っているレコードのみを DM バックフィル対象とする
+  - `chatId` または `receiverId` を欠くレコードは `directMessages` へは移さず、件数と代表例をログに残す
 
 ### フェーズ2: 既存データ移行
 
-- `messages` の全データを `directMessages` へコピーする
+- フェーズ1でバックフィル対象と判定したレコードのみを `directMessages` へコピーする
 - 変換時に各レコードを正規化する
   - `timestamp` の型揺れを吸収して `createdAt` へ変換する
   - `senderId` / `senderName` と `userId` / `userName` の揺れを吸収して新フィールドへ写す
   - `chatId` は `#27` で確定した長さプレフィックス方式へ変換する
 - コピー件数とサンプル整合を確認する
+- バックフィル対象外としたレコード数と代表例をログやレポートとして残し、必要なら手動補正または削除方針を別途決める
 
 ### フェーズ3: 読み取り切り替え
 
