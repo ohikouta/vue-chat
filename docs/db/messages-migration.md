@@ -15,17 +15,17 @@
 
 現行実装では 1 対 1 DM が `messages` に保存されており、少なくとも次の利用箇所が確認できる。
 
-- [PrivateChatView.vue](/Users/koutaohi/projects/vue-chat/src/views/PrivateChatView.vue)
+- [PrivateChatView.vue](../../src/views/PrivateChatView.vue)
   - `messages` を `chatId + timestamp` で購読
   - 送信時も `messages` に書き込み
-- [HomeView.vue](/Users/koutaohi/projects/vue-chat/src/views/HomeView.vue)
+- [HomeView.vue](../../src/views/HomeView.vue)
   - `messages` 全件購読と書き込みが残っている
-- [ChatView.vue](/Users/koutaohi/projects/vue-chat/src/views/ChatView.vue)
+- [ChatView.vue](../../src/views/ChatView.vue)
   - `messages` 全件購読と書き込みが残っている
-- [UserList.vue](/Users/koutaohi/projects/vue-chat/src/components/UserList.vue)
+- [UserList.vue](../../src/components/UserList.vue)
   - `users/{userId}/messages/latest` を最新メッセージ表示に利用
 
-一方、設計上の正式な保存先は [firestore.md](/Users/koutaohi/projects/vue-chat/docs/db/firestore.md) で `directMessages` と定義済みである。
+一方、設計上の正式な保存先は [firestore.md](./firestore.md) で `directMessages` と定義済みである。
 
 ## 現行データの整理
 
@@ -40,6 +40,8 @@
 - `receiverId`
 - `chatId`
 - `participants`
+- `userId`
+- `userName`
 
 ### `directMessages`
 
@@ -93,11 +95,11 @@
 | 現行 `messages` | 移行先 `directMessages` | 備考 |
 |---|---|---|
 | `text` | `text` | そのまま移す |
-| `senderId` | `senderId` | そのまま移す |
-| `senderName` | `senderName` | そのまま移す |
+| `senderId` | `senderId` | `senderId` があればそのまま移す。なければ `userId` を使う |
+| `senderName` | `senderName` | `senderName` があればそのまま移す。なければ `userName` を使う |
 | `receiverId` | `receiverId` | そのまま移す |
-| `chatId` | `chatId` | 旧値を新フォーマットへ変換して移す。生成規則は `#27` の長さプレフィックス方式を採用 |
-| `timestamp` | `createdAt` | フィールド名を変換して保持する |
+| `chatId` | `chatId` | 旧値を新フォーマットへ変換して移す。生成規則は `#27` で確定した長さプレフィックス方式を採用 |
+| `timestamp` | `createdAt` | `Timestamp` と `Date` の揺れを吸収し、Firestore `Timestamp` へ正規化して保持する |
 | `participants` | なし | 現時点では移行先の必須フィールドにしない |
 
 ## `users/{userId}/messages/latest` の扱い
@@ -112,13 +114,22 @@
 ### フェーズ1: バックフィル準備
 
 - `directMessages` のコレクション定義を前提にする
-- `messages.timestamp` を `directMessages.createdAt` へ変換するルールを固定する
+- `messages` から `directMessages` への変換ルールを固定する
+  - `createdAt` は Firestore `Timestamp` を正とする
+  - `messages.timestamp` が Firestore `Timestamp` ならそのまま使う
+  - `messages.timestamp` が JS `Date` なら Firestore `Timestamp` に変換して使う
+  - `messages.timestamp` が欠損・不正なら、バックフィル対象から除外してログに出すか補正方針を決めてから実行する
+  - `senderId` / `senderName` が無ければ `userId` / `userName` から補完する
+  - `senderId` と `userId` のどちらも無いレコードは異常データとして扱い、スキップまたは手動補正対象にする
 - バックフィル対象を列挙する
 
 ### フェーズ2: 既存データ移行
 
 - `messages` の全データを `directMessages` へコピーする
-- 変換時に `timestamp` -> `createdAt` を適用する
+- 変換時に各レコードを正規化する
+  - `timestamp` の型揺れを吸収して `createdAt` へ変換する
+  - `senderId` / `senderName` と `userId` / `userName` の揺れを吸収して新フィールドへ写す
+  - `chatId` は `#27` で確定した長さプレフィックス方式へ変換する
 - コピー件数とサンプル整合を確認する
 
 ### フェーズ3: 読み取り切り替え
@@ -164,7 +175,6 @@
 
 ## 未確定事項
 
-- `chatId` は `#27` で確定した長さプレフィックス方式へ変換する
 - `directMessages` を使う画面クエリと必要インデックスは `#28` で確定する
 - `directMessages` の権限制御詳細は `#29` で確定する
 - バックフィル実行方法（スクリプト / エミュレータ / 本番手順）は実装時に別途決める
