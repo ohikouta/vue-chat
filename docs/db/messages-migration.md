@@ -16,7 +16,7 @@
 現行実装では 1 対 1 DM が `messages` に保存されており、少なくとも次の利用箇所が確認できる。
 
 - [PrivateChatView.vue](../../src/views/PrivateChatView.vue)
-  - `messages` を `chatId + timestamp` で購読
+  - `messages` を `chatId` でフィルタし、`timestamp` 昇順で購読
   - 送信時も `messages` に書き込み
 - [HomeView.vue](../../src/views/HomeView.vue)
   - `messages` 全件購読と書き込みが残っている
@@ -98,7 +98,7 @@
 | `senderId` | `senderId` | `senderId` があればそのまま移す。なければ `userId` を使う |
 | `senderName` | `senderName` | `senderName` があればそのまま移す。なければ `userName` を使う |
 | `receiverId` | `receiverId` | そのまま移す |
-| `chatId` | `chatId` | 旧値を新フォーマットへ変換して移す。生成規則は `#27` で確定した長さプレフィックス方式を採用 |
+| `chatId` | `chatId` | 旧値を新フォーマットへ変換して移す。生成規則は `#27` で確定した長さプレフィックス方式を採用する（`firestore.md` 側の `#27` 前提記述は追って同期する） |
 | `timestamp` | `createdAt` | `Timestamp` と `Date` の揺れを吸収し、Firestore `Timestamp` へ正規化して保持する |
 | `participants` | なし | 現時点では移行先の必須フィールドにしない |
 
@@ -161,6 +161,8 @@
 - タイムスタンプ変換により表示順が壊れる
 
 ## ロールバック手順
+
+読み取り先 / 書き込み先の切り替えは、実装時に導入する設定値または機能フラグで制御できる状態を前提にする。具体的な実装方式は後続の実装 Issue で決めるが、少なくとも「読み取りだけ戻す」「書き込みだけ戻す」を個別に切り替えられる構成にする。
 
 1. 新規書き込みの切り替えを止める
 2. 読み取り先を `messages` に戻す
