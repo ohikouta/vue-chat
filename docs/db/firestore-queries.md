@@ -5,8 +5,8 @@
 
 ## 前提
 
-- 画面構成は [routes.md](/Users/koutaohi/projects/vue-chat/docs/routes.md) を基準にする
-- データ構造は [firestore.md](/Users/koutaohi/projects/vue-chat/docs/db/firestore.md) を基準にする
+- 画面構成は [routes.md](../routes.md) を基準にする
+- データ構造は [firestore.md](./firestore.md) を基準にする
 - `chatId` は `#27` で確定した長さプレフィックス方式で生成する
 - 既存 `messages` と `users/{userId}/messages/latest` の扱いは `#26` で確定する
 
@@ -26,7 +26,7 @@
 ### HomeView
 
 参照コード:
-- [HomeView.vue](/Users/koutaohi/projects/vue-chat/src/views/HomeView.vue)
+- [HomeView.vue](../../src/views/HomeView.vue)
 
 現在のログイン済み分岐では `UserList` を表示しており、`HomeView` 自体でも `messages` と `users` を読んでいる。
 ただし UI 上は `messages` を利用していないため、現状の `messages` 購読は将来的に削除候補。
@@ -39,7 +39,7 @@
 ### UserList
 
 参照コード:
-- [UserList.vue](/Users/koutaohi/projects/vue-chat/src/components/UserList.vue)
+- [UserList.vue](../../src/components/UserList.vue)
 
 | 用途 | クエリ | 備考 | インデックス |
 |---|---|---|---|
@@ -50,13 +50,13 @@
 ### PrivateChat
 
 参照コード:
-- [PrivateChatView.vue](/Users/koutaohi/projects/vue-chat/src/views/PrivateChatView.vue)
+- [PrivateChatView.vue](../../src/views/PrivateChatView.vue)
 
 現状は `messages` を利用しているが、To-Be では `directMessages` へ移行する前提。
 
 | 用途 | クエリ | 現状 / To-Be | インデックス |
 |---|---|---|---|
-| 会話メッセージ購読 | `where("chatId", "==", chatId) + orderBy("timestamp", "asc")` | 現状 `messages`。To-Be は `directMessages` + `createdAt` | 複合インデックス候補 |
+| 会話メッセージ購読 | `where("chatId", "==", chatId) + orderBy("timestamp", "asc")` | 現状 `messages`。保存時には `participants` も持つ。To-Be は `directMessages` + `createdAt` | 複合インデックス候補 |
 | 相手ユーザー取得 | `getDoc(doc(db, "users", chatPartnerId))` | 現状維持でよい | 不要 |
 | 送信者表示名取得 | `getDoc(doc(db, "users", currentUser.uid))` | 送信前に 1 件取得 | 不要 |
 
