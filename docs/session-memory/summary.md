@@ -10,7 +10,7 @@
 - `#25` は完了し、PR `#32` は merge 済み
 - `#27` は完了し、PR `#37` は merge 済み
 - 現在の open Issue は `#26` `#28` `#29` `#30`
-- Firestore 設計の基準は [firestore.md](/Users/koutaohi/projects/vue-chat/docs/db/firestore.md)
+- Firestore 設計の基準は [firestore.md](../db/firestore.md)
 
 ## Recent Progress
 
@@ -50,6 +50,6 @@
 
 ## Reference Logs
 
-- [2026-03-08-Firestore設計整理.md](/Users/koutaohi/Library/Mobile%20Documents/iCloud~md~obsidian/Documents/obsidian-private/vue-chat/08_Logs/2026-03-08-Firestore設計整理.md)
-- [audit.md](/Users/koutaohi/projects/vue-chat/docs/session-memory/audit.md)
-- [multi-agent-orchestration.md](/Users/koutaohi/projects/vue-chat/docs/multi-agent-orchestration.md)
+- Obsidian 実施ログ `2026-03-08-Firestore設計整理.md` を追加
+- [audit.md](./audit.md)
+- [multi-agent-orchestration.md](../multi-agent-orchestration.md)

@@ -10,7 +10,7 @@ prefix_rule(
 )
 
 prefix_rule(
-    pattern = ["git", ["status", "diff", "log", "show", "branch"]],
+    pattern = ["git", ["status", "diff", "log", "show"]],
     decision = "allow",
     justification = "Read-only git inspection is safe to run without prompting.",
     match = [
@@ -18,11 +18,25 @@ prefix_rule(
         "git diff --stat",
         "git log --oneline -5",
         "git show HEAD",
-        "git branch --show-current",
     ],
     not_match = [
         "git add .",
         "git commit -m test",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "branch", ["--show-current", "--list", "-vv"]],
+    decision = "allow",
+    justification = "Explicitly read-only git branch inspection is safe to run without prompting.",
+    match = [
+        "git branch --show-current",
+        "git branch --list",
+        "git branch -vv",
+    ],
+    not_match = [
+        "git branch feature/test",
+        "git branch -d old-branch",
     ],
 )
 

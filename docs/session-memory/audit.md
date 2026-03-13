@@ -36,7 +36,7 @@
 ## 2026-03-08T06:12:00Z
 
 - Obsidian の `タスク.md` で `#25` カードを完了へ更新
-- Obsidian 実施ログ [2026-03-08-Firestore設計整理.md](/Users/koutaohi/Library/Mobile%20Documents/iCloud~md~obsidian/Documents/obsidian-private/vue-chat/08_Logs/2026-03-08-Firestore設計整理.md) を追加
+- Obsidian 実施ログ `2026-03-08-Firestore設計整理.md` を追加
 
 ## 2026-03-08T06:25:00Z
 
