@@ -129,7 +129,6 @@
 |---|---|---|
 | スレッド本体取得 | `getDoc(doc("threads", threadId))` | 不要 |
 | コメント一覧 | `query(collection("threads", threadId, "comments"), orderBy("createdAt", "asc"))` | 不要 |
-| コメント降順 | `query(..., orderBy("createdAt", "desc"))` | 不要 |
 
 #### メモ
 
