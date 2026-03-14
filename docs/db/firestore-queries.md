@@ -102,20 +102,19 @@
 
 #### 目的
 
-- スレッド一覧を新着順または更新順に表示する
+- スレッド一覧を新着順で表示する
 
 #### 想定クエリ
 
 | 用途 | クエリ | インデックス |
 |---|---|---|
 | スレッド一覧（新着順） | `query(collection("threads"), orderBy("createdAt", "desc"))` | 単一フィールド index で足りる想定 |
-| スレッド一覧（更新順） | `query(collection("threads"), orderBy("lastCommentAt", "desc"))` | `lastCommentAt` を採用する場合は単一フィールド index で足りる想定 |
 | 投稿者絞り込み | `query(collection("threads"), where("authorId", "==", userId), orderBy("createdAt", "desc"))` | `authorId + createdAt` の複合インデックス候補 |
 | タグ絞り込み | `query(collection("threads"), where("tags", "array-contains", tag), orderBy("createdAt", "desc"))` | `tags + createdAt` の複合インデックス候補 |
 
 #### メモ
 
-- `lastCommentAt` は必須前提にしない。採用する場合だけ、全 thread に値が入る前提で運用するほうが安全
+- 基本線は新着順表示で十分とし、更新順ソートはこの設計の主対象に含めない
 - タグ絞り込みを MVP に含めるかは別途 UI 要件と合わせて確認が必要
 
 ### ThreadDetail
