@@ -156,8 +156,8 @@
 ## `#27` 反映事項
 
 - `chatId` は長さプレフィックス方式を前提にする
-- `directMessages` は `chatId` を単一文字列フィールドとして扱う
-- `PrivateChat` は `directMessages.createdAt` を正式タイムスタンプとして使う前提で整理する
+- `directMessages` の会話一覧取得は `chatId` をキーに絞り込む前提にする
+- `PrivateChat` の時系列表示は `directMessages.createdAt` を使う前提で整理する
 
 ## `#26` 依存の未確定事項
 
