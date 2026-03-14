@@ -27,10 +27,10 @@
 
 | コレクション | read | create | update | delete |
 |---|---|---|---|---|
-| `users/{userId}` | 認証ユーザーのみ | 本人のみ | 本人のみ | 原則なし |
+| `users/{userId}` | 認証ユーザーのみ | 本人のみ | 本人のみ | 当面は許可しない |
 | `threads/{threadId}` | 認証ユーザーのみ | 認証ユーザー本人 | 原則作成者本人のみ | 原則作成者本人のみ |
 | `threads/{threadId}/comments/{commentId}` | 認証ユーザーのみ | 認証ユーザー本人 | 原則作成者本人のみ | 原則作成者本人のみ |
-| `directMessages/{messageId}` | 当事者のみ | 送信者本人のみ | 原則なし | 原則なし |
+| `directMessages/{messageId}` | 当事者のみ | 送信者本人のみ | 当面は許可しない | 当面は許可しない |
 
 ## コレクション別方針
 
