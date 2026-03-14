@@ -22,49 +22,6 @@
 | Timeline（今後実装） | スレッド一覧 | `threads` | 単一フィールド index で足りる想定 |
 | ThreadDetail（今後実装） | スレッド本体、コメント一覧 | `threads`, `threads/{threadId}/comments` | 基本不要 |
 
-## 現状
-
-### HomeView
-
-参照コード:
-- [HomeView.vue](../../src/views/HomeView.vue)
-
-現在のログイン済み分岐では `UserList` を表示しており、`HomeView` 自体でも `messages` と `users` を読んでいる。
-ただし UI 上は `messages` を利用していないため、現状の `messages` 購読は将来的に削除候補。
-
-| 用途 | クエリ | 備考 | インデックス |
-|---|---|---|---|
-| 全メッセージ購読 | `collection(db, "messages")` | 現状 UI では未使用。`#26` 後に再評価 | 不要 |
-| 全ユーザー購読 | `collection(db, "users")` | 現状 UI では `UserList` 側と責務が重複 | 不要 |
-
-### UserList
-
-参照コード:
-- [UserList.vue](../../src/components/UserList.vue)
-
-| 用途 | クエリ | 備考 | インデックス |
-|---|---|---|---|
-| ユーザー一覧 | `getDocs(collection(db, "users"))` | 現状は全件取得。並び順は未定義 | 不要 |
-| 最新メッセージ補助 | `getDoc(doc(db, \`users/${userId}/messages\`, "latest"))` | 正式保存先ではなく派生データ。必要なら後続で再設計 | 不要 |
-| オンライン状態監視 | `onSnapshot(doc(db, "users", userId))` | 各ユーザーごとに購読 | 不要 |
-
-### PrivateChat
-
-参照コード:
-- [PrivateChatView.vue](../../src/views/PrivateChatView.vue)
-
-現状は `messages` を利用しているが、今後は `directMessages` へ移行する前提。
-
-| 用途 | クエリ | 現状 / 今後 | インデックス |
-|---|---|---|---|
-| 会話メッセージ購読 | `where("chatId", "==", chatId) + orderBy("timestamp", "asc")` | 現状 `messages`。保存時には `participants` も持つ。今後は `directMessages` + `createdAt` | 複合インデックス候補 |
-| 相手ユーザー取得 | `getDoc(doc(db, "users", chatPartnerId))` | 現状維持でよい | 不要 |
-| 送信者表示名取得 | `getDoc(doc(db, "users", currentUser.uid))` | 送信前に 1 件取得 | 不要 |
-
-### Profile
-
-ルーティング上は存在するが、本成果物ではコード確認を省略している。想定としては `users/{currentUserId}` の単一ドキュメント read/write で足りるため、追加インデックスは不要。
-
 ## 今後実装する画面
 
 ### Home / Users
