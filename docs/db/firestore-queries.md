@@ -1,30 +1,54 @@
 # Firestore クエリ / インデックス設計
 
 `#28 画面ごとの Firestore クエリと必要インデックスを定義する` の成果物。
-この文書は、現状画面の Firestore 利用と、今後実装する画面で必要になるクエリ / インデックスを整理し、実装前に詰まりやすい箇所を見える化することを目的とする。
+この文書は、ページごとに必要な Firestore クエリとインデックスを整理し、実装前に詰まりやすい箇所を見える化することを目的とする。
 
 ## 前提
 
 - 画面構成は [routes.md](../routes.md) を基準にする
+- 画面導線とワイヤーの俯瞰は [view-wireframes.drawio](../view-wireframes.drawio) を補助資料として参照する
 - データ構造は [firestore.md](./firestore.md) を基準にする
 - `chatId` は `#27` で確定した長さプレフィックス方式で生成する
 - 既存 `messages` の段階移行方針は `#26` で確定済み
 - `users/{userId}/messages/latest` は正式保存先ではなく、必要なら後続で再設計する派生データとして扱う
 
-## まとめ
+## 対象ページ一覧
+
+### 現状実装
+
+| ページ | パス | 役割 | Firestore クエリ設計の主対象か |
+|---|---|---|---|
+| `Home` | `/` | 未ログイン時はランディング、ログイン時は `UserList` への入口 | いいえ |
+| `Login` | `/login` | ログイン導線 | いいえ |
+| `Register` | `/register` | 登録導線 | いいえ |
+| `Users` | `/users` | ユーザー一覧 | はい |
+| `PrivateChat` | `/chat/:userId` | 1対1チャット | はい |
+| `Profile` | `/profile` | 自分のプロフィール表示 / 更新 | はい |
+
+### 今後実装するページ
+
+| ページ | パス | 役割 | Firestore クエリ設計の主対象か |
+|---|---|---|---|
+| `Timeline` | `/timeline` | スレッド一覧 | はい |
+| `ThreadDetail` | `/timeline/:postId/thread` | スレッド詳細 / コメント一覧 | はい |
+
+## ページ別サマリー
 
 | 画面 | 主クエリ | 想定保存先 | インデックス要否 |
 |---|---|---|---|
-| Home（未ログイン） | なし | - | 不要 |
-| Home / Users（ログイン済み） | `users` 一覧、必要なら最新メッセージ補助取得 | `users`, `users/{userId}/messages/latest` または後続設計 | 基本不要 |
+| `Home` | なし | - | 不要 |
+| `Users` | `users` 一覧、必要なら最新メッセージ補助取得 | `users`, `users/{userId}/messages/latest` または後続設計 | 基本不要 |
 | PrivateChat | 会話単位のメッセージ一覧、相手ユーザー取得 | `directMessages`, `users` | DM 一覧は複合インデックス候補 |
 | Profile | 自分のユーザー情報取得 / 更新 | `users` | 不要 |
-| Timeline（今後実装） | スレッド一覧 | `threads` | 単一フィールド index で足りる想定 |
-| ThreadDetail（今後実装） | スレッド本体、コメント一覧 | `threads`, `threads/{threadId}/comments` | 基本不要 |
+| Timeline | スレッド一覧 | `threads` | 単一フィールド index で足りる想定 |
+| ThreadDetail | スレッド本体、コメント一覧 | `threads`, `threads/{threadId}/comments` | 基本不要 |
 
-## 今後実装する画面
+## クエリ設計対象ページ
 
-### Home / Users
+ログイン / 登録 / ランディングのような導線ページは主に Firebase Auth とルーターが中心になるため、この文書では Firestore クエリ設計の主対象から外す。
+ここでは `Users` `PrivateChat` `Profile` `Timeline` `ThreadDetail` を対象にする。
+
+### Users
 
 #### 目的
 
