@@ -22,7 +22,7 @@
 | Timeline（今後実装） | スレッド一覧 | `threads` | 単一フィールド index で足りる想定 |
 | ThreadDetail（今後実装） | スレッド本体、コメント一覧 | `threads`, `threads/{threadId}/comments` | 基本不要 |
 
-## As-Is
+## 現状
 
 ### HomeView
 
