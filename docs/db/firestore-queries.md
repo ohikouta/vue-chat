@@ -82,7 +82,7 @@
 | 用途 | クエリ | インデックス |
 |---|---|---|
 | 会話一覧取得 | `query(collection("directMessages"), where("chatId", "==", chatId), orderBy("createdAt", "asc"))` | `chatId + createdAt` の複合インデックス候補 |
-| 相手ユーザー取得 | `getDoc(doc("users", userId))` | 不要 |
+| チャット相手の表示情報取得 | `getDoc(doc("users", userId))` | 不要 |
 
 #### メモ
 
