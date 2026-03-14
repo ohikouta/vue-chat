@@ -1,7 +1,7 @@
 # Firestore クエリ / インデックス設計
 
-`#28 画面ごとの Firestore クエリと必要インデックスを定義する` のドラフト。
-この文書は、現状画面の Firestore 利用と、To-Be 画面で必要になるクエリ / インデックスを整理し、実装前に詰まりやすい箇所を見える化することを目的とする。
+`#28 画面ごとの Firestore クエリと必要インデックスを定義する` の成果物。
+この文書は、現状画面の Firestore 利用と、今後実装する画面で必要になるクエリ / インデックスを整理し、実装前に詰まりやすい箇所を見える化することを目的とする。
 
 ## 前提
 
@@ -19,8 +19,8 @@
 | Home / Users（ログイン済み） | `users` 一覧、必要なら最新メッセージ補助取得 | `users`, `users/{userId}/messages/latest` または後続設計 | 基本不要 |
 | PrivateChat | 会話単位のメッセージ一覧、相手ユーザー取得 | `directMessages`, `users` | DM 一覧は複合インデックス候補 |
 | Profile | 自分のユーザー情報取得 / 更新 | `users` | 不要 |
-| Timeline（To-Be） | スレッド一覧 | `threads` | 単一フィールド index で足りる想定 |
-| ThreadDetail（To-Be） | スレッド本体、コメント一覧 | `threads`, `threads/{threadId}/comments` | 基本不要 |
+| Timeline（今後実装） | スレッド一覧 | `threads` | 単一フィールド index で足りる想定 |
+| ThreadDetail（今後実装） | スレッド本体、コメント一覧 | `threads`, `threads/{threadId}/comments` | 基本不要 |
 
 ## As-Is
 
@@ -53,19 +53,19 @@
 参照コード:
 - [PrivateChatView.vue](../../src/views/PrivateChatView.vue)
 
-現状は `messages` を利用しているが、To-Be では `directMessages` へ移行する前提。
+現状は `messages` を利用しているが、今後は `directMessages` へ移行する前提。
 
-| 用途 | クエリ | 現状 / To-Be | インデックス |
+| 用途 | クエリ | 現状 / 今後 | インデックス |
 |---|---|---|---|
-| 会話メッセージ購読 | `where("chatId", "==", chatId) + orderBy("timestamp", "asc")` | 現状 `messages`。保存時には `participants` も持つ。To-Be は `directMessages` + `createdAt` | 複合インデックス候補 |
+| 会話メッセージ購読 | `where("chatId", "==", chatId) + orderBy("timestamp", "asc")` | 現状 `messages`。保存時には `participants` も持つ。今後は `directMessages` + `createdAt` | 複合インデックス候補 |
 | 相手ユーザー取得 | `getDoc(doc(db, "users", chatPartnerId))` | 現状維持でよい | 不要 |
 | 送信者表示名取得 | `getDoc(doc(db, "users", currentUser.uid))` | 送信前に 1 件取得 | 不要 |
 
 ### Profile
 
-ルーティング上は存在するが、本ドラフトではコード確認を省略している。想定としては `users/{currentUserId}` の単一ドキュメント read/write で足りるため、追加インデックスは不要。
+ルーティング上は存在するが、本成果物ではコード確認を省略している。想定としては `users/{currentUserId}` の単一ドキュメント read/write で足りるため、追加インデックスは不要。
 
-## To-Be
+## 今後実装する画面
 
 ### Home / Users
 
@@ -105,7 +105,7 @@
 #### メモ
 
 - `chatId` の生成規則は `#27` 依存
-- 現状コードは `timestamp` を使っているが、To-Be は `createdAt` 前提に寄せる
+- 現状コードは `timestamp` を使っているが、今後は `createdAt` 前提に寄せる
 
 ### Profile
 
@@ -183,10 +183,10 @@
 ## `#26` 依存の未確定事項
 
 - `users/{userId}/messages/latest` を残すか、別の DM 一覧設計へ置き換えるか
-- 現行 `messages.timestamp` と To-Be `directMessages.createdAt` の完全な移行方針
+- 現行 `messages.timestamp` と今後の `directMessages.createdAt` の完全な移行方針
 - UserList における最新メッセージ表示を現行のまま残すかどうか
 
-## このドラフトで言えること
+## この成果物で言えること
 
 - PrivateChat の本命クエリは `directMessages` の `chatId + createdAt`
 - ThreadDetail のコメント表示は単純クエリで足りる
