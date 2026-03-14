@@ -67,8 +67,8 @@
 #### メモ
 
 - ユーザー一覧に最新メッセージを表示する場合、現状の実装案ではユーザーごとに `latest` を取りにいく形になるため、件数が増えると見直しが必要になる
-- 最新メッセージを表示する場合、`users/{userId}/messages/latest` のようなクエリ結果をそのまま使う方法がある
-- 最新メッセージの表示をこのページで採用する場合は、毎回クエリ結果を表示するのか、別の表示運用にするのかを後続で決める
+- 最新メッセージを表示する場合は、ひとまず表示のたびに都度クエリする前提にする
+- 専用コレクションの追加は、本当にパフォーマンス上の問題が出てから検討する
 
 ### PrivateChat
 
@@ -158,16 +158,3 @@
 - `chatId` は長さプレフィックス方式を前提にする
 - `directMessages` の会話一覧取得は `chatId` をキーに絞り込む前提にする
 - `PrivateChat` の時系列表示は `directMessages.createdAt` を使う前提で整理する
-
-## `#26` 依存の未確定事項
-
-- `users/{userId}/messages/latest` を残すか、別の DM 一覧設計へ置き換えるか
-- 現行 `messages.timestamp` と今後の `directMessages.createdAt` の完全な移行方針
-- UserList における最新メッセージ表示を現行のまま残すかどうか
-
-## この成果物で言えること
-
-- PrivateChat の本命クエリは `directMessages` の `chatId + createdAt`
-- ThreadDetail のコメント表示は単純クエリで足りる
-- Timeline のタグ絞り込みをやるなら `threads` に複合インデックスが増える
-- UserList の最新メッセージ表示は `#26` の結論待ち要素がある
