@@ -8,7 +8,8 @@
 - 画面構成は [routes.md](../routes.md) を基準にする
 - データ構造は [firestore.md](./firestore.md) を基準にする
 - `chatId` は `#27` で確定した長さプレフィックス方式で生成する
-- 既存 `messages` と `users/{userId}/messages/latest` の扱いは `#26` で確定する
+- 既存 `messages` の段階移行方針は `#26` で確定済み
+- `users/{userId}/messages/latest` は正式保存先ではなく、必要なら後続で再設計する派生データとして扱う
 
 ## まとめ
 
@@ -44,7 +45,7 @@
 | 用途 | クエリ | 備考 | インデックス |
 |---|---|---|---|
 | ユーザー一覧 | `getDocs(collection(db, "users"))` | 現状は全件取得。並び順は未定義 | 不要 |
-| 最新メッセージ補助 | `getDoc(doc(db, \`users/${userId}/messages\`, "latest"))` | `#26` の結果次第で維持 / 再設計 | 不要 |
+| 最新メッセージ補助 | `getDoc(doc(db, \`users/${userId}/messages\`, "latest"))` | 正式保存先ではなく派生データ。必要なら後続で再設計 | 不要 |
 | オンライン状態監視 | `onSnapshot(doc(db, "users", userId))` | 各ユーザーごとに購読 | 不要 |
 
 ### PrivateChat
@@ -79,12 +80,12 @@
 |---|---|---|
 | ユーザー一覧 | `collection("users")` | 不要 |
 | ユーザー一覧の並び順を決める場合 | `orderBy("username")` または `orderBy("createdAt", "desc")` | 単一フィールド index で足りる想定 |
-| 最新メッセージ補助表示 | `users/{userId}/messages/latest` を読む、または後続設計で代替 | `#26` 依存 |
+| 最新メッセージ補助表示 | `users/{userId}/messages/latest` を読む、または後続設計で代替 | 派生データの扱いを後続で再設計 |
 
 #### メモ
 
 - 現状コードは N+1 で `latest` を取得しているため、DM 一覧の要件が強くなるなら後続で再設計が必要
-- `#26` で `users/{userId}/messages/latest` を残さない場合、ユーザー一覧での最新メッセージ表示方法を改めて決める必要がある
+- `users/{userId}/messages/latest` は派生データなので、DM 一覧要件が固まった時点で残すか代替するかを改めて決める必要がある
 
 ### PrivateChat
 
@@ -126,13 +127,13 @@
 | 用途 | クエリ | インデックス |
 |---|---|---|
 | スレッド一覧（新着順） | `query(collection("threads"), orderBy("createdAt", "desc"))` | 単一フィールド index で足りる想定 |
-| スレッド一覧（更新順） | `query(collection("threads"), orderBy("lastCommentAt", "desc"))` | 単一フィールド index で足りる想定 |
+| スレッド一覧（更新順） | `query(collection("threads"), orderBy("lastCommentAt", "desc"))` | `lastCommentAt` を採用する場合は単一フィールド index で足りる想定 |
 | 投稿者絞り込み | `query(collection("threads"), where("authorId", "==", userId), orderBy("createdAt", "desc"))` | `authorId + createdAt` の複合インデックス候補 |
 | タグ絞り込み | `query(collection("threads"), where("tags", "array-contains", tag), orderBy("createdAt", "desc"))` | `tags + createdAt` の複合インデックス候補 |
 
 #### メモ
 
-- `lastCommentAt` で並べる場合、全 thread に値が入る前提で運用するほうが安全
+- `lastCommentAt` は必須前提にしない。採用する場合だけ、全 thread に値が入る前提で運用するほうが安全
 - タグ絞り込みを MVP に含めるかは別途 UI 要件と合わせて確認が必要
 
 ### ThreadDetail
@@ -162,7 +163,7 @@
 |---|---|---|---|
 | `directMessages` | `chatId ASC, createdAt ASC` | PrivateChat の時系列表示 | なし |
 | `directMessages` | `chatId ASC, createdAt DESC` | PrivateChat の逆順取得 | なし |
-| `threads` | `authorId ASC, createdAt DESC` | 投稿者ごとのスレッド一覧 | なし |
+| `threads` | `authorId ASC, createdAt DESC` | 投稿者ごとのスレッド一覧 | 投稿者絞り込みを採用する場合 |
 | `threads` | `tags ARRAY_CONTAINS, createdAt DESC` | タグ絞り込み + 新着順 | タグ検索を採用する場合 |
 
 ### 追加不要
@@ -181,7 +182,7 @@
 
 ## `#26` 依存の未確定事項
 
-- `users/{userId}/messages/latest` を残すかどうか
+- `users/{userId}/messages/latest` を残すか、別の DM 一覧設計へ置き換えるか
 - 現行 `messages.timestamp` と To-Be `directMessages.createdAt` の完全な移行方針
 - UserList における最新メッセージ表示を現行のまま残すかどうか
 
