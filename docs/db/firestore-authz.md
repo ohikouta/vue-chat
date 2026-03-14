@@ -85,9 +85,9 @@
   - 本文編集
   - タグ編集
   - `updatedAt`
-  - `commentCount`
-  - `lastCommentAt`
-- ただし `commentCount` と `lastCommentAt` はコメント投稿に伴う派生更新なので、Rules 実装時に「どこまでクライアント更新を許すか」は要注意
+- `commentCount` / `lastCommentAt` のような派生フィールドは、この Issue では必須前提にしない
+- コメント件数や最終コメント時刻は、必要に応じて `threads/{threadId}/comments` から取得する前提を基本とする
+- もし一覧表示の都合で派生フィールドを持たせる場合は、更新責務を別途明確にしてから Rules に落とす
 
 #### delete
 
@@ -145,7 +145,7 @@
 - `request.auth != null` の確認を全 protected collection で徹底する
 - `authorId` / `senderId` と `request.auth.uid` の一致を必ず見る
 - 更新時に変更可能なフィールドを絞る
-- `threads` の `commentCount` / `lastCommentAt` は、コメント追加時の更新手段を決めてから Rules に落とす
+- `threads` に派生フィールドを持たせる場合は、コメント追加時の更新手段を決めてから Rules に落とす
 
 ## 未確定事項
 
